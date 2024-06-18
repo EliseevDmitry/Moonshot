@@ -7,12 +7,19 @@
 
 import SwiftUI
 
+struct CrewMember {
+    let role: String
+    let astronaut: Astronaut
+}
+
 struct MissionView: View {
-    struct CrewMember {
-        let role: String
-        let astronaut: Astronaut
-    }
     
+    
+    private static var formatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd-MM-YYYY"
+        return formatter
+    }
     let mission: Mission
     let crew: [CrewMember]
     
@@ -24,15 +31,24 @@ struct MissionView: View {
                     .scaledToFit()
                     .containerRelativeFrame(.horizontal) {width, axis in
                         width * 0.6
-                     }
+                    }
+                if let date = mission.launchDate {
+                    Text("\(MissionView.formatter.string(from: date))")
+                        .font(.title2)
+                }
                 VStack(alignment: .leading){
+                    CustomDevider()
                     Text("Mission Highlights")
                         .font(.title.bold())
                         .padding(.bottom, 5)
                     Text(mission.description)
-                    
+                    CustomDevider()
+                    Text("Crew")
+                        .font(.title.bold())
+                        .padding(.bottom, 5)
                 }//:VStack
                 .padding(.horizontal)
+                CustomHScroll(crew: crew)
             }
             .padding(.bottom)
         }
@@ -48,7 +64,7 @@ struct MissionView: View {
             } else {
                 fatalError("Missing \(member.name)")
             }
-         }
+        }
     }
 }
 

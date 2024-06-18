@@ -8,47 +8,31 @@
 import SwiftUI
 
 struct ContentView: View {
-    let astronauts: [String: Astronaut] = Bundle.main.decode("astronauts.json")
-    let missions: [Mission] = Bundle.main.decode("missions.json")
-    
     let colums = [
         GridItem(.adaptive(minimum: 150))
     ]
+    @State private var selectedColorIndex: Int = 0
     var body: some View {
         NavigationStack{
             ScrollView{
-                LazyVGrid(columns: colums){
-                    ForEach(missions) { mission in
-                        NavigationLink {
-                            Text("Detail view")
-                        } label: {
-                            VStack{
-                                Image(mission.image)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 100, height: 100)
-                                    .padding()
-                                VStack{
-                                    Text(mission.displayName)
-                                        .font(.headline)
-                                        .foregroundStyle(.white)
-                                    Text(mission.formattedLaunchDate)
-                                        .font(.caption)
-                                        .foregroundStyle(.white.opacity(0.5))
-                                }//: VStack
-                                .padding(.vertical)
-                                .frame(maxWidth: .infinity)
-                                .background(.lightBackground)
-                            }//:VStack
-                            .clipShape(.rect(cornerRadius: 10))
-                            .overlay {
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(.lightBackground)
-                            }
-                        }
+                CustomPiker(selectedColorIndex: $selectedColorIndex)
+                    .onAppear{
+                        UISegmentedControl.appearance().selectedSegmentTintColor = .blue
+                        UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor.green], for: .selected)
+                        UISegmentedControl.appearance().backgroundColor = .gray
+                        let attr = NSDictionary(object: UIFont(name: "HelveticaNeue-Bold", size: 16.0)!, forKey: NSAttributedString.Key.font as NSCopying)
+                        UISegmentedControl.appearance().setTitleTextAttributes(attr as? [NSAttributedString.Key : Any], for: .normal)
                     }
+                if selectedColorIndex == 0 {
+                    LazyVGrid(columns: colums){
+                        DataPage()
+                    }
+                    .padding([.horizontal, .bottom])
                 }
-                .padding([.horizontal, .bottom])
+                if selectedColorIndex == 1 {
+                    DataPage()
+                        .padding()
+                }
             }//: ScrollView
             .navigationTitle("Moonshot")
             .background(.darkBackground)
